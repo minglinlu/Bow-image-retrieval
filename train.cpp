@@ -1,11 +1,13 @@
-#include "train.h"
 #include "BagOfFeature.h"
+#include <iostream>
+
+using namespace std;
 
 int main(){
 	auto_ptr<BagOfFeature> bow(new BagOfFeature());	
 	vector<cv::Mat> images;
 	//Read Images
-	if(!bow->ReadImages("/Users/lml/Desktop/image.orig/",images)){
+	if(!bow->readImages("/Users/lml/Desktop/image.orig/",images)){
 		cout<<"read images failed"<<endl;
 	}
 	cout<<"read "<<images.size()<<" images"<<endl;

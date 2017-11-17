@@ -15,11 +15,12 @@ class BagOfFeature
 {
 	public:
 		double cal_theta (Mat A, Mat B);
-		bool ReadImages(const string& dir, vector<Mat>& images);
+		bool readImages(const string& dir, vector<Mat>& images);
 		Mat extractFeature (vector<Mat> &images);
-		Mat genFeatureMap (const string &dictionaryDir, vector<Mat> &images);
-		Mat genSingleFeatureMap(const string &dictionaryDir, vector<Mat> &images);
+		Mat genBOWMap (Mat &dictionary, vector<Mat> &images);
+		Mat genSingleBOWMap( Mat &dictionary,Mat &images);
 		Mat trainFeature (Mat &descriptors,int dictionarySize=100);
+		Mat loadDictionay(const string &dictDir);
 	private:
 		clock_t last_time;
 };

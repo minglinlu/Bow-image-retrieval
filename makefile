@@ -4,13 +4,18 @@ CFLAGS = -std=c++11
 INCPATH = -I/usr/local/include
 LIBPATH = -L/usr/local/lib
 
-objects=train.o BagOfFeature.o
-train:	$(objects)
-	g++ $(CFLAGS) $(INCPATH) $(LIBPATH) -o train ${objects} `pkg-config --libs opencv` `pkg-config --cflags opencv`
-train.o:train.cpp train.h
+#objects=train.o BagOfFeature.o
+all:	train genBOW
+genBOW:genBOW.o BagOfFeature.o
+	g++ $(CFLAGS) $(INCPATH) $(LIBPATH) -o genBOW genBOW.o BagOfFeature.o `pkg-config --libs opencv` `pkg-config --cflags opencv`
+genBOW.o:genBOW.cpp
+	g++ -c genBOW.cpp
+train:	train.o BagOfFeature.o
+	g++ $(CFLAGS) $(INCPATH) $(LIBPATH) -o train train.o BagOfFeature.o `pkg-config --libs opencv` `pkg-config --cflags opencv`
+train.o:train.cpp
 	g++ $(CFLAGS) $(INCPATH) -c train.cpp 
 BagOfFeature.o:	BagOfFeature.cpp BagOfFeature.h
 	g++ $(CFLAGS) $(INCPATH) -c BagOfFeature.cpp 
 
 clean:
-	rm -rf log *.log *.o *.out *.d train
+	rm -rf log *.log *.o *.out *.d train genBOW
