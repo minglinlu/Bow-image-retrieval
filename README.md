@@ -17,6 +17,7 @@ Then try 'make'...
 We can get 3 output files: train genBOW query
 
 There are 3 steps to do now.
+
 (1) ./train 1000
 train the dictionary with k=1000
 
