@@ -12,12 +12,12 @@ int main(int argc, char **argv){
 	auto_ptr<BagOfFeature> bow(new BagOfFeature());
 	
 	//load the codebook here
-	string dictDir="/Users/lml/Desktop/CPP/Bow-image-retrieval/data/surf_freak_dictionary_1000.yml";
+	string dictDir="/Users/lml/Desktop/CPP/Bow-image-retrieval/data/surf_freak_dictionary_10000.yml";
 	Mat dictionary=bow->loadDictionay(dictDir);
 	cout<<"dictionary size: "<<dictionary.size()<<endl;
 
 	Mat idf;
-	Mat bows=bow->loadBows("/Users/lml/Desktop/CPP/Bow-image-retrieval/data/surf_freak_bows_1000.yml",idf);
+	Mat bows=bow->loadBows("/Users/lml/Desktop/CPP/Bow-image-retrieval/data/surf_freak_bows_10000.yml",idf);
 	cout<<"bows size:"<<bows.size()<<endl;
 	Mat img = imread(queryImg);
 
