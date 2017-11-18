@@ -5,7 +5,11 @@ INCPATH = -I/usr/local/include
 LIBPATH = -L/usr/local/lib
 
 #objects=train.o BagOfFeature.o
-all:	train genBOW
+all:	train genBOW query
+query:query.o BagOfFeature.o
+	g++ $(CFLAGS) $(INCPATH) $(LIBPATH) -o query query.o BagOfFeature.o `pkg-config --libs opencv` `pkg-config --cflags opencv`
+query.o:query.cpp
+	g++ -c query.cpp
 genBOW:genBOW.o BagOfFeature.o
 	g++ $(CFLAGS) $(INCPATH) $(LIBPATH) -o genBOW genBOW.o BagOfFeature.o `pkg-config --libs opencv` `pkg-config --cflags opencv`
 genBOW.o:genBOW.cpp
@@ -18,4 +22,4 @@ BagOfFeature.o:	BagOfFeature.cpp BagOfFeature.h
 	g++ $(CFLAGS) $(INCPATH) -c BagOfFeature.cpp 
 
 clean:
-	rm -rf log *.log *.o *.out *.d train genBOW
+	rm -rf log *.log *.o *.out *.d train genBOW query
