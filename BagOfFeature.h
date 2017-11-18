@@ -24,7 +24,7 @@ class BagOfFeature
 		Mat trainFeature (Mat &descriptors,int dictionarySize=100);
 		Mat loadDictionay(const string &dictDir);
 		Mat loadBows(const string &bowsDir,Mat &idf);
-		vector<Mat> queryImg(Mat &queryImg,Mat &dictionary,Mat &bows,Mat &idf);
+		vector<pair<string,float> > queryImg(Mat &queryImg,Mat &dictionary,Mat &bows,Mat &idf);
 	private:
 		clock_t last_time;
 };

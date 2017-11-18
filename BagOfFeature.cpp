@@ -1,9 +1,11 @@
 #include "BagOfFeature.h"
 
 Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create("BruteForce");	
-Ptr<FeatureDetector> surfDetector(new SurfFeatureDetector(2000, 4));
-Ptr<DescriptorExtractor> freakExtractor = DescriptorExtractor::create("FREAK");
-BOWImgDescriptorExtractor bowDE (freakExtractor, matcher);
+//Ptr<FeatureDetector> detector(new SurfFeatureDetector(2000, 4));
+Ptr<FeatureDetector> detector= FeatureDetector::create("SURF");
+Ptr<DescriptorExtractor> extractor = DescriptorExtractor::create("FREAK");
+//Ptr<DescriptorExtractor> extractor = DescriptorExtractor::create("SURF");
+BOWImgDescriptorExtractor bowDE (extractor, matcher);
 
 double BagOfFeature::cal_hist (Mat A, Mat B)
 {
@@ -64,11 +66,10 @@ Mat BagOfFeature::extractFeature (vector<Mat> &images)
 	SiftFeatureDetector siftDetector;
 	SurfFeatureDetector surfDetector(2000,4);
 	//extractor
-	FREAK freakExtractor;
 	for (int f = 0; f < images.size(); f += 1){
 		input = images[f];
 		surfDetector.detect(input, keypoints);
-		freakExtractor.compute(input, keypoints, descriptor);
+		extractor->compute(input, keypoints, descriptor);
 		descriptor.convertTo(descriptor, CV_32FC1);
 		features.push_back(descriptor);
 	}
@@ -82,14 +83,10 @@ Mat BagOfFeature::genSingleBOWMap( Mat &dictionary,Mat &images){
 
 Mat BagOfFeature::genBOWMap(Mat &dictionary, vector<Mat> &images){
 	Mat bows;
-	//	Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create("BruteForce");	
-	//	Ptr<FeatureDetector> surfDetector(new SurfFeatureDetector(2000, 4));
-	//	Ptr<DescriptorExtractor> freakExtractor = DescriptorExtractor::create("FREAK");
-	//	BOWImgDescriptorExtractor bowDE (freakExtractor, matcher);
 	bowDE.setVocabulary (dictionary);
 
 	//where the bows to store
-	FileStorage fs1 ("./data/surf_freak_bows_"+to_string(dictionary.rows)+".yml", FileStorage::WRITE);
+	FileStorage fs1 ("./data/bows.yml", FileStorage::WRITE);
 	Mat input;
 	Mat bowDescriptor;
 	//idf=sum(every bow)
@@ -97,7 +94,7 @@ Mat BagOfFeature::genBOWMap(Mat &dictionary, vector<Mat> &images){
 	vector<KeyPoint> keypoints;
 	for (int f = 0; f < images.size(); f += 1){
 		input = images[f];
-		surfDetector->detect (input, keypoints);
+		detector->detect (input, keypoints);
 		bowDE.compute (input, keypoints, bowDescriptor);
 		bowDescriptor *= keypoints.size();
 		bowDescriptor.convertTo (bowDescriptor, CV_32F);
@@ -132,7 +129,7 @@ Mat BagOfFeature::trainFeature (Mat &descriptors,int dictionarySize){
 	BOWKMeansTrainer bowTrainer (dictionarySize, tc, retries, flags);
 	Mat dictionary = bowTrainer.cluster (descriptors);
 	dictionary.convertTo(dictionary, CV_8UC1);
-	FileStorage fs ("./data/surf_freak_dictionary_"+to_string(dictionarySize)+".yml", FileStorage::WRITE);
+	FileStorage fs ("./data/dictionary.yml", FileStorage::WRITE);
 	fs << "vocabulary" << dictionary;
 	fs.release();
 	return dictionary;
@@ -159,14 +156,14 @@ Mat BagOfFeature::loadBows(const string &bowsDir,Mat &idf){
 //  int CmpByValue(const pair<int, double>& lhs, const pair<int, double>& rhs) {  
 //    return lhs.second > rhs.second;  
 //  }  
-vector<Mat> BagOfFeature::queryImg(Mat &queryImg,Mat &dictionary,Mat &bows,Mat &idf){
-	vector<Mat> retImgs;
+vector<pair<string,float> > BagOfFeature::queryImg(Mat &queryImg,Mat &dictionary,Mat &bows,Mat &idf){
+	vector<pair<string,float>> retImgs;
 	bowDE.setVocabulary (dictionary);
 
 	//cal the bow for query image
 	vector<KeyPoint> keypoints;
 	Mat bowDescriptor(1,dictionary.rows,CV_32F,Scalar(0));
-	surfDetector->detect (queryImg, keypoints);
+	detector->detect (queryImg, keypoints);
 	bowDE.compute (queryImg, keypoints, bowDescriptor);
 	cout<<keypoints.size()<<endl;
 	if(keypoints.size()>0)bowDescriptor *= keypoints.size();
@@ -186,6 +183,8 @@ vector<Mat> BagOfFeature::queryImg(Mat &queryImg,Mat &dictionary,Mat &bows,Mat &
 			max=score;
 			id=i;
 			cout<<id<<".jpg sim: "<<max<<endl;
+			string src="/Users/lml/Desktop/image.orig/"+to_string(id)+".jpg";
+			retImgs.push_back(make_pair(src,score));
 		}
 	}
 	//cout<<id<<".jpg sim: "<<max<<endl;
