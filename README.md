@@ -27,4 +27,6 @@ There are 3 steps to do now.
 (3) `./query /Users/lml/Desktop/image.orig/999.jpg`
     Now, you can get the result in ./result.html, open result.html, you can get the rank result.
 
-# Thanks 
+# Useful links 
+https://github.com/willard-yuan/image-retrieval/tree/master/bag-of-words-dev-version
+https://github.com/psastras/vocabtree
