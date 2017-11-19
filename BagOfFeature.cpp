@@ -2,9 +2,11 @@
 
 Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create("BruteForce");	
 //Ptr<FeatureDetector> detector(new SurfFeatureDetector(2000, 4));
-Ptr<FeatureDetector> detector= FeatureDetector::create("SURF");
-Ptr<DescriptorExtractor> extractor = DescriptorExtractor::create("FREAK");
-//Ptr<DescriptorExtractor> extractor = DescriptorExtractor::create("SURF");
+//Ptr<FeatureDetector> detector= FeatureDetector::create("SURF");
+Ptr<FeatureDetector> detector= FeatureDetector::create("SIFT");
+//Ptr<DescriptorExtractor> extractor = DescriptorExtractor::create("FREAK");
+#define SIFT_DESCRIPTOR
+Ptr<DescriptorExtractor> extractor = DescriptorExtractor::create("SIFT");
 BOWImgDescriptorExtractor bowDE (extractor, matcher);
 
 double BagOfFeature::cal_hist (Mat A, Mat B)
@@ -83,6 +85,9 @@ Mat BagOfFeature::genSingleBOWMap( Mat &dictionary,Mat &images){
 
 Mat BagOfFeature::genBOWMap(Mat &dictionary, vector<Mat> &images){
 	Mat bows;
+#ifdef SIFT_DESCRIPTOR
+	dictionary.convertTo(dictionary,CV_32F);
+#endif
 	bowDE.setVocabulary (dictionary);
 
 	//where the bows to store
@@ -158,6 +163,9 @@ Mat BagOfFeature::loadBows(const string &bowsDir,Mat &idf){
 //  }  
 vector<pair<string,float> > BagOfFeature::queryImg(Mat &queryImg,Mat &dictionary,Mat &bows,Mat &idf){
 	vector<pair<string,float>> retImgs;
+#ifdef SIFT_DESCRIPTOR
+	dictionary.convertTo(dictionary,CV_32F);
+#endif
 	bowDE.setVocabulary (dictionary);
 
 	//cal the bow for query image
