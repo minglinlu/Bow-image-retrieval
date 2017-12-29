@@ -8,7 +8,7 @@ Bow-image-retrieval Branch:SIFTDetector+SIFTExtractor
 
 3.complete idf computation.
 
-# steps to use
+# Steps to use
 You need to install opencv and make sure the makefile is no problem.
 And get the images set from http://wang.ist.psu.edu/~jwang/test1.tar, tar -zxvf to your local dir.
 vi train.cpp and replace "/Users/lml/Desktop/image.orig/" to your local dir.
